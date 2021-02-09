@@ -5,11 +5,11 @@ import config
 class Paddle(Component):
     def __init__(self, x=config.board_width // 2, width=config.paddle_init_width, ball=None):
         representation = ['X' * width]
-        super().__init__(x, config.paddle_row_restriction, [representation])
+        super().__init__(x, config.paddle_row_restriction, representation)
         self._ball = ball
 
     def get_center_x_coordinate(self):
-        return self._x + self._width // 2 + 1
+        return self._x + self._width // 2
 
     def hold_ball(self, ball):
         if self._ball:

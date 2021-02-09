@@ -3,7 +3,7 @@ import config
 
 
 class Ball(Component):
-    def __init__(self, x, y, xvel, yvel, representation=[['o']], free=0):
+    def __init__(self, x, y, xvel, yvel, representation=[['o']], free=0, speed=1):
         """
         Ball component
         :param x: x position
@@ -15,6 +15,7 @@ class Ball(Component):
         super().__init__(x, y, representation)
         self._xvel = xvel
         self._yvel = yvel
+        self._speed = speed
         self.is_free = free
 
     def set_is_free(self, free):
@@ -22,6 +23,12 @@ class Ball(Component):
 
     def get_is_free(self):
         return self.is_free
+
+    def set_speed(self, speed):
+        self._speed = speed
+
+    def get_speed(self):
+        return self._speed
 
     def move_relative(self, board, x_diff=0, y_diff=0):
         """
