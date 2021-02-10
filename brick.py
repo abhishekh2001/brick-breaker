@@ -28,6 +28,22 @@ class Brick(Component):
     def get_health(self):
         return self._health
 
+    def got_hit(self, board):
+        """
+        Performs operations for when the brick gets hit by the ball
+        and returns whether the brick is destroyed
+        :rtype: bool
+        """
+        if self._brick_type == 1:
+            self._health = 0
+            self._brick_type = 0
+            self.clear(board)
+            return True
+        elif self._brick_type != -1 and self._brick_type != 0:
+            self._health -= 1
+            self._brick_type -= 1
+        return False
+
     def _get_color(self):
         if self._brick_type == -1:
             return Back.RED
@@ -37,6 +53,8 @@ class Brick(Component):
             return Back.BLUE
         elif self._brick_type == 3:
             return Back.MAGENTA
+        else:
+            return Back.LIGHTCYAN_EX
 
     def render(self, board):
         for row in range(self._height):
