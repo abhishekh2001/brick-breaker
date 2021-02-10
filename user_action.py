@@ -11,6 +11,9 @@ def make_move():
     if c == 'd':
         paddle.move_relative(board.matrix, 1)
 
+    if c == 'e':
+        paddle.release_ball()
+
     if c == 'q':
         print('fin')
         quit()

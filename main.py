@@ -1,8 +1,10 @@
 from modules import *
-
-from glob import board, paddle, balls, move_balls, prev_ball_timestamp
+import colorama
+from glob import board, paddle, balls, move_balls, prev_ball_timestamp, bricks
 import user_action
 
+
+colorama.init()
 
 while True:
     user_action.make_move()
@@ -11,5 +13,8 @@ while True:
     prev_ball_timestamp = move_balls(prev_ball_timestamp)
     for ball in balls:
         ball.render(board.matrix)
+    for brick in bricks:
+        brick.render(board.matrix)
     paddle.render(board.matrix)
     board.render()
+

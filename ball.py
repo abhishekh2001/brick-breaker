@@ -11,6 +11,7 @@ class Ball(Component):
         :param xvel: velocity in the x direction
         :param yvel: velocity in the y direction
         :param representation: representation of ball in matrix
+        :param speed: interval between ball movements. Keep it less than input timeout
         """
         super().__init__(x, y, representation)
         self._xvel = xvel
@@ -30,6 +31,18 @@ class Ball(Component):
     def get_speed(self):
         return self._speed
 
+    def set_xvel(self, xvel):
+        self._xvel = xvel
+
+    def get_xvel(self):
+        return self._xvel
+
+    def set_yvel(self, yvel):
+        self._yvel = yvel
+
+    def get_yvel(self):
+        return self._yvel
+
     def move_relative(self, board, x_diff=0, y_diff=0):
         """
         Sets new position relative to current position of paddle
@@ -43,10 +56,32 @@ class Ball(Component):
         if new_pos_x >= 0 and new_pos_x + self._width <= config.board_width:
             self.set_x(new_pos_x)
 
+        if new_pos_x <= 0 or new_pos_x >= config.board_width:
+            self.set_xvel(-self._xvel)
+
         new_pos_y = self._y + y_diff
         if new_pos_y >= 0 and new_pos_y + self._height <= config.board_height:
             self.set_y(new_pos_y)
 
+        if new_pos_y == 0:
+            self.set_yvel(-self._yvel)
+
+    def handle_paddle_collision(self, paddle):
+        if paddle.get_x() <= self._x <= paddle.get_x() + paddle.get_width() and \
+                self._y == paddle.get_y() - 1:
+            self.set_yvel(-self._yvel)
+            self.set_relative_velocity(x_vel_diff=(self._x - paddle.get_center_x_coordinate()))
+            return True
+        elif self._y >= paddle.get_y():
+            return False
+
+        return True
+
     def set_relative_velocity(self, x_vel_diff=0, y_vel_diff=0):
+        """
+        Sets change in relative velocity of ball from current velocity
+        :param x_vel_diff: Difference by which x-velocity is to be changed
+        :param y_vel_diff: Difference by which y-velocity is to be changed
+        """
         self._xvel += x_vel_diff
         self._yvel += y_vel_diff

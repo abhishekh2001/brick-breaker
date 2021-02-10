@@ -18,14 +18,26 @@ class Paddle(Component):
         ball.set_is_free(False)
         self._ball = ball
 
+    def get_ball_rel_distance_from_p_center(self):
+        """
+        Returns the relative distance of the ball from the center
+        :return: Integer value that signifies relative x-position from center
+        """
+        if not self._ball:
+            return None
+
+        return self._ball.get_x() - self.get_center_x_coordinate()
+
     def release_ball(self):
         """
         Release ball held by paddle
         :return:
         """
-        #  TODO: Handle trajectory of ball
         if self._ball:
+            self._ball.set_relative_velocity(x_vel_diff=self.get_ball_rel_distance_from_p_center())
+            self._ball.set_yvel(-1)
             self._ball.set_is_free(True)
+            self._ball = None
 
     def set_width(self, width=3):
         """
@@ -48,7 +60,3 @@ class Paddle(Component):
             if self._ball:
                 self._ball.move_relative(board, x_diff)
 
-    def render(self, board):
-        for row in range(self._height):
-            for col in range(self._width):
-                board[self._y + row][self._x + col] = self._representation[row][col]
