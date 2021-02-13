@@ -1,9 +1,9 @@
 from modules import *
 import colorama
-from glob import board, paddle, balls, prev_ball_timestamp, move_balls, prev_powerup_timestamp, move_powerups
+from glob import board, paddle, prev_ball_timestamp, move_balls, prev_powerup_timestamp, move_powerups
 import glob
 import user_action
-
+# TODO: limit x_vel to +/- 2
 
 colorama.init()
 
@@ -18,7 +18,7 @@ while True:
     prev_powerup_timestamp = move_powerups(prev_powerup_timestamp)
 
     # Render screen elements
-    for ball in balls:
+    for ball in glob.balls:
         ball.render(board.matrix)
     for brick in glob.bricks:
         brick.render(board.matrix)

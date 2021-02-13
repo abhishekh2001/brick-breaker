@@ -44,6 +44,7 @@ class Paddle(Component):
         Sets width of paddle
         :param width: width of paddle
         """
+        width = max(3, min(7, width))
         representation = ['X' * width]
         self.set_representation(representation)
 

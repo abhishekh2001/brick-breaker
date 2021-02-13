@@ -14,7 +14,8 @@ class PowerUp(Component):
     5: thru-ball
     6: paddle grab
 
-    self._status determines current status of the powerup
+
+    _status determines current status of the powerup
     -1: missed
     0: spawned
     1: active
@@ -23,6 +24,7 @@ class PowerUp(Component):
     def __init__(self, x, y, representation):
         super().__init__(x, y, representation)
         self._type = random.randint(1, 6)
+        self._type = 4                              # TESTING
         self._speed = 0.6
         self._status = 0
 

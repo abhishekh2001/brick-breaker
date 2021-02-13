@@ -26,7 +26,7 @@ class Ball(Component):
         return self.is_free
 
     def set_speed(self, speed):
-        self._speed = speed
+        self._speed = min(max(speed, 0.2), 0.6)
 
     def get_speed(self):
         return self._speed
@@ -67,6 +67,11 @@ class Ball(Component):
             self.set_yvel(-self._yvel)
 
     def handle_paddle_collision(self, paddle):
+        """
+        Returns False if ball is lost and true otherwise
+        :param paddle:
+        :return:
+        """
         if paddle.get_x() <= self._x <= paddle.get_x() + paddle.get_width() and \
                 self._y == paddle.get_y() - 1:
             self.set_yvel(-self._yvel)
