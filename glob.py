@@ -4,6 +4,8 @@ from paddle import Paddle
 from ball import Ball
 from brick import Brick
 import time
+from powerup import PowerUp
+import config
 
 board = Board()
 paddle = Paddle(8)
@@ -11,6 +13,8 @@ balls = [
     Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2, free=True),
     # Ball(1, 1, 1, -1, speed=0.2, free=True)
 ]
+powerups = []
+active_powerups = []
 # bricks = [Brick(10, 9, 3, ['BBBB']),
 #           Brick(10, 11, 1, ['BBBB']),
 #           Brick(15, 8, 3, ['BBBB']),
@@ -20,11 +24,16 @@ balls = [
 bricks = []
 for y in range(5, 15, 2):
     for j in range(10, 40, 6):
-        bricks.append(Brick(j, y, 1, ['BBBB']))
+        bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
 # bricks = [Brick(10, 20, -1, ['BBBB'])]
 paddle.hold_ball(balls[0])
 
 prev_ball_timestamp = time.time()  # Improve
+prev_powerup_timestamp = time.time()
+
+def spawn_powerup(x, y):
+    powerup = PowerUp(x, y, ['P'])
+    powerups.append(powerup)
 
 
 def handle_ball_brick_collision(ball):
@@ -32,7 +41,9 @@ def handle_ball_brick_collision(ball):
     for brick in bricks:
         if brick.get_x() - 1 <= ball.get_x() <= brick.get_x() + brick.get_width() and \
                 brick.get_y() - 1 <= ball.get_y() <= brick.get_y() + brick.get_height():
-            brick.got_hit(board.matrix)
+            if brick.got_hit(board.matrix):
+                if random.random() <= config.prob_powerup:
+                    spawn_powerup(brick.get_x(), brick.get_y())
 
             if brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width()-1:
                 ball.set_yvel(-ball.get_yvel())
@@ -44,6 +55,18 @@ def handle_ball_brick_collision(ball):
 
             break
     bricks = list(filter(lambda b: b.get_health(), bricks))
+
+
+def move_powerups(ppt):
+    global powerups
+    flag = False
+    for powerup in powerups:
+        if time.time() - ppt >= powerup.get_speed():
+            powerup.go_down(board.matrix)
+            flag = True
+    if flag:
+        ppt = time.time()
+    return ppt
 
 
 def move_balls(pbt):

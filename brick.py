@@ -35,14 +35,17 @@ class Brick(Component):
         :rtype: bool
         """
         if self._brick_type == 1:
-            self._health = 0
-            self._brick_type = 0
-            self.clear(board)
+            self.destroy(board)
             return True
         elif self._brick_type != -1 and self._brick_type != 0:
             self._health -= 1
             self._brick_type -= 1
         return False
+
+    def destroy(self, board):
+        self._health = 0
+        self._brick_type = 0
+        self.clear(board)
 
     def _get_color(self):
         if self._brick_type == -1:
