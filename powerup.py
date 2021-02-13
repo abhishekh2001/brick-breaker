@@ -13,17 +13,41 @@ class PowerUp(Component):
     4: fast ball
     5: thru-ball
     6: paddle grab
+
+    self._status determines current status of the powerup
+    -1: missed
+    0: spawned
+    1: active
+    2: disabled
     """
     def __init__(self, x, y, representation):
         super().__init__(x, y, representation)
         self._type = random.randint(1, 6)
         self._speed = 0.6
+        self._status = 0
+
+    def get_status(self):
+        return self._status
+
+    def set_status(self, status):
+        self._status = status
 
     def get_type(self):
         return self._type
 
     def get_speed(self):
         return self._speed
+
+    def is_caught_by_paddle(self, paddle):
+        """
+        Return true if caught by paddle and false otherwise
+        :param paddle: The paddle instance
+        :return: Boolean, true if caught and false otherwise
+        """
+        if paddle.get_x() <= self._x <= paddle.get_x() + paddle.get_width() and \
+                self._y == paddle.get_y() - 1:
+            return True
+        return False
 
     def go_down(self, board):
         """

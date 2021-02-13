@@ -8,7 +8,7 @@ from powerup import PowerUp
 import config
 
 board = Board()
-paddle = Paddle(8)
+paddle = Paddle(8, width=3)
 balls = [
     Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2, free=True),
     # Ball(1, 1, 1, -1, speed=0.2, free=True)
@@ -25,11 +25,11 @@ bricks = []
 for y in range(5, 15, 2):
     for j in range(10, 40, 6):
         bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
-# bricks = [Brick(10, 20, -1, ['BBBB'])]
 paddle.hold_ball(balls[0])
 
 prev_ball_timestamp = time.time()  # Improve
 prev_powerup_timestamp = time.time()
+
 
 def spawn_powerup(x, y):
     powerup = PowerUp(x, y, ['P'])
@@ -58,14 +58,28 @@ def handle_ball_brick_collision(ball):
 
 
 def move_powerups(ppt):
+    """
+    Responsible for moving all powerups and handling cases when user misses the powerup or catches it.
+    :param ppt: previous powerup timestamp
+    :return: value of powerup timestamp after current iteration
+    """
     global powerups
     flag = False
     for powerup in powerups:
         if time.time() - ppt >= powerup.get_speed():
-            powerup.go_down(board.matrix)
             flag = True
+            if powerup.is_caught_by_paddle(paddle):                          # Check if powerup is caught
+                active_powerups.append(powerup)                              # store active powerups
+                powerup.set_status(config.powerup_status['ACTIVE'])          # Update status of caught powerup
+            if powerup.go_down(board.matrix):
+                powerup.set_status(config.powerup_status['MISSED'])          # User has missed the powerup
     if flag:
         ppt = time.time()
+
+    powerups = list(filter(lambda p: p.get_status() == config.powerup_status['SPAWNED'], powerups))
+
+    board.matrix[0][0] = str(len(powerups))
+    board.matrix[0][2] = str(len(active_powerups))
     return ppt
 
 
