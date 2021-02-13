@@ -10,8 +10,9 @@ import config
 board = Board()
 paddle = Paddle(8)
 balls = [
-    Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.6, free=True),
+    # Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.6, free=True),
     # Ball(1, 1, 1, -1, speed=0.2, free=True)
+    Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2, free=True),
 ]
 powerups = []
 to_activate_powerups = []
@@ -20,7 +21,7 @@ active_powerups = []
 bricks = []
 for y in range(5, 15, 2):
     for j in range(10, 40, 6):
-        bricks.append(Brick(j, y, 1, ['BBBBB']))
+        bricks.append(Brick(j, y, 3, ['BBBBB']))
         # bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
 paddle.hold_ball(balls[0])
 
@@ -29,8 +30,9 @@ prev_powerup_timestamp = time.time()
 
 
 def spawn_powerup(x, y):
-    powerup = PowerUp(x, y, ['P'])
-    powerups.append(powerup)
+    if random.random() <= config.prob_powerup:
+        powerup = PowerUp(x, y, ['P'])
+        powerups.append(powerup)
 
 
 def activate_powerups():
@@ -53,7 +55,8 @@ def activate_powerups():
                     balls.append(
                         Ball(ball.get_x(),
                              ball.get_y(), -ball.get_xvel(), -ball.get_yvel(),
-                             free=True, speed=ball.get_speed()))
+                             free=True, speed=ball.get_speed())
+                    )
         elif powerup.get_type() == 4:  # ball speed
             to_append = False
             for ball in balls:
@@ -61,7 +64,7 @@ def activate_powerups():
                     to_append = True
                     ball.set_speed(ball.get_speed() - 0.2)
         elif powerup.get_type() == 5:  # thru-ball
-            to_append = False
+            to_append = True
 
         if to_append:
             active_powerups.append(powerup)
@@ -69,25 +72,29 @@ def activate_powerups():
     to_activate_powerups = []
 
 
+def is_thru_ball():
+    return 5 in map(lambda x: x.get_type(), active_powerups)
+
+
 def handle_ball_brick_collision(ball):
     global bricks
     for brick in bricks:
         if brick.get_x() - 1 <= ball.get_x() <= brick.get_x() + brick.get_width() and \
                 brick.get_y() - 1 <= ball.get_y() <= brick.get_y() + brick.get_height():
-            if brick.got_hit(board.matrix):
-                if 5 in map(lambda x: x.get_type(), active_powerups):  # if thru-ball is active, destroy brick
-                    brick.destroy(board.matrix)
-                if random.random() <= config.prob_powerup:
-                    spawn_powerup(brick.get_x(), brick.get_y())
+            if is_thru_ball():  # if thru-ball is active, destroy brick
+                brick.destroy(board.matrix)
+                spawn_powerup(brick.get_x(), brick.get_y())
+            elif brick.got_hit(board.matrix):
+                spawn_powerup(brick.get_x(), brick.get_y())
 
-            if brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width() - 1:
-                ball.set_yvel(-ball.get_yvel())
-            elif brick.get_y() <= ball.get_y() <= brick.get_y() + brick.get_height() - 1:
-                ball.set_xvel(-ball.get_xvel())
-            else:
-                ball.set_yvel(-ball.get_yvel())
-                ball.set_xvel(-ball.get_xvel())
-
+            if not is_thru_ball():  # handle collisions only if thru-ball is inactive
+                if brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width() - 1:
+                    ball.set_yvel(-ball.get_yvel())
+                elif brick.get_y() <= ball.get_y() <= brick.get_y() + brick.get_height() - 1:
+                    ball.set_xvel(-ball.get_xvel())
+                else:
+                    ball.set_yvel(-ball.get_yvel())
+                    ball.set_xvel(-ball.get_xvel())
             break
     bricks = list(filter(lambda b: b.get_health(), bricks))
 

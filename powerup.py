@@ -24,7 +24,7 @@ class PowerUp(Component):
     def __init__(self, x, y, representation):
         super().__init__(x, y, representation)
         self._type = random.randint(1, 6)
-        self._type = 4                              # TESTING
+        self._type = 5                              # TESTING
         self._speed = 0.6
         self._status = 0
 
