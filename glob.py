@@ -6,6 +6,9 @@ from brick import Brick
 import time
 from powerup import PowerUp
 import config
+from player import Player
+
+player = Player()
 
 debug_statement = 'NONE'
 
@@ -29,6 +32,37 @@ paddle.hold_ball(balls[0])
 
 prev_ball_timestamp = time.time()  # Improve
 prev_powerup_timestamp = time.time()
+
+
+def init():
+    global bricks
+    global powerups
+    global active_powerups
+    global to_activate_powerups
+    global balls
+    global prev_ball_timestamp
+    global prev_powerup_timestamp
+    global active_powerups
+
+    balls = [
+        Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.3,
+             free=True),
+    ]
+    paddle.hold_ball(balls[0])
+    bricks = []
+    for y in range(5, 15, 4):
+        for j in range(10, 100, 15):
+            # bricks.append(Brick(j, y, 1, ['BBBBB']))
+            bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
+    prev_ball_timestamp = time.time()  # Improve
+    prev_powerup_timestamp = time.time()
+
+    for powerup in powerups:
+        powerup.clear(board.matrix)
+
+    powerups = []
+    active_powerups = []
+    to_activate_powerups = []  # TODO: check if this is necessary
 
 
 def spawn_powerup(x, y):
@@ -87,8 +121,10 @@ def handle_ball_brick_collision(ball):
             if is_thru_ball():  # if thru-ball is active, destroy brick
                 brick.destroy(board.matrix)
                 spawn_powerup(brick.get_x(), brick.get_y())
+                player.increment_points()  # increase points
             elif brick.got_hit(board.matrix):  # Brick has zero health -> is destroyed
                 spawn_powerup(brick.get_x(), brick.get_y())
+                player.increment_points()  # increase player points
 
             if not is_thru_ball():  # handle collisions only if thru-ball is inactive
                 if brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width() - 1:
@@ -140,9 +176,8 @@ def move_balls(pbt):
             if not ret:
                 balls.remove(ball)
         if not len(balls):
-            print('fin', debug_statement)
-            print(ball.get_xvel(), ball.get_yvel())
-            quit()
+            player.lose_life()
+            init()
     if flag:
         pbt = time.time()
     return pbt

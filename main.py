@@ -4,10 +4,13 @@ from glob import board, paddle, prev_ball_timestamp, move_balls, prev_powerup_ti
 import glob
 import user_action
 # TODO: limit x_vel to +/- 2
+# TODO: how to handle lost life
+# TODO: handle when player has killed all the bricks
+# TODO: different bricks, different scores
 
 colorama.init()
 
-while True:
+while True and glob.player.get_lives():
     # Move paddle
     user_action.make_move()
 
@@ -31,5 +34,7 @@ while True:
     board.matrix[0][15] = str(glob.balls[0].get_y())
     board.matrix[0][20] = str(glob.balls[0].get_xvel())
     board.matrix[0][25] = str(glob.balls[0].get_yvel())
+    print('Life: ', glob.player.get_lives())
+    print('Score: ', glob.player.get_points())
     board.render()
 
