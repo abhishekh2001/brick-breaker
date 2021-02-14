@@ -3,6 +3,9 @@ from component import Component
 import config
 
 
+type_repr_map = ['-', ['E'], ['S'], ['B'], ['F'], ['T'], ['G']]
+
+
 class PowerUp(Component):
     """
     self._type is one of the six power-up types
@@ -22,9 +25,8 @@ class PowerUp(Component):
     2: disabled
     """
     def __init__(self, x, y, representation):
-        super().__init__(x, y, representation)
         self._type = random.randint(1, 6)
-        self._type = 6                              # TESTING
+        super().__init__(x, y, type_repr_map[self._type])
         self._speed = 0.6
         self._status = 0
 

@@ -4,7 +4,7 @@ import config
 
 class Paddle(Component):
     def __init__(self, x=config.board_width // 2, width=config.paddle_init_width, ball=None):
-        representation = ['X' * width]
+        representation = ['▄' * width]
         super().__init__(x, config.paddle_row_restriction, representation)
         self._ball = ball
         self._grab = False
@@ -55,7 +55,7 @@ class Paddle(Component):
         :param width: width of paddle
         """
         width = max(3, min(7, width))
-        representation = ['X' * width]
+        representation = ['▄' * width]
         self.set_representation(representation)
 
     def move_relative(self, board, x_diff=0):

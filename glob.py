@@ -12,19 +12,19 @@ debug_statement = 'NONE'
 board = Board()
 paddle = Paddle(8)
 balls = [
-    # Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.6, free=True),
+    Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.3, free=True),
     # Ball(1, 1, 1, -1, speed=0.2, free=True)
-    Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2, free=True),
+    # Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2, free=True),
 ]
 powerups = []
 to_activate_powerups = []
 active_powerups = []
 
 bricks = []
-for y in range(5, 15, 2):
-    for j in range(10, 40, 6):
-        bricks.append(Brick(j, y, 1, ['BBBBB']))
-        # bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
+for y in range(5, 15, 4):
+    for j in range(10, 100, 15):
+        # bricks.append(Brick(j, y, 1, ['BBBBB']))
+        bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
 paddle.hold_ball(balls[0])
 
 prev_ball_timestamp = time.time()  # Improve
@@ -62,9 +62,9 @@ def activate_powerups():
         elif powerup.get_type() == 4:  # ball speed
             to_append = False
             for ball in balls:
-                if 0.2 < ball.get_speed() <= 0.6:
+                if 0.1 < ball.get_speed() <= 0.3:
                     to_append = True
-                    ball.set_speed(ball.get_speed() - 0.2)
+                    ball.set_speed(ball.get_speed() - 0.1)
         elif powerup.get_type() == 5:  # thru-ball
             to_append = True
         elif powerup.get_type() == 6:  # Paddle grab
@@ -87,7 +87,7 @@ def handle_ball_brick_collision(ball):
             if is_thru_ball():  # if thru-ball is active, destroy brick
                 brick.destroy(board.matrix)
                 spawn_powerup(brick.get_x(), brick.get_y())
-            elif brick.got_hit(board.matrix):
+            elif brick.got_hit(board.matrix):  # Brick has zero health -> is destroyed
                 spawn_powerup(brick.get_x(), brick.get_y())
 
             if not is_thru_ball():  # handle collisions only if thru-ball is inactive
@@ -97,7 +97,7 @@ def handle_ball_brick_collision(ball):
                     ball.set_xvel(-ball.get_xvel())
                 else:
                     ball.set_yvel(-ball.get_yvel())
-                    ball.set_xvel(-ball.get_xvel())
+                    # ball.set_xvel(-ball.get_xvel())
             break
     bricks = list(filter(lambda b: b.get_health(), bricks))
 
@@ -124,8 +124,6 @@ def move_powerups(ppt):
     powerups = list(filter(lambda p: p.get_status() == config.powerup_status['SPAWNED'], powerups))
 
     activate_powerups()
-    board.matrix[0][0] = str(len(powerups))
-    board.matrix[0][2] = str(len(active_powerups))
 
     return ppt
 

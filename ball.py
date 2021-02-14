@@ -26,7 +26,7 @@ class Ball(Component):
         return self.is_free
 
     def set_speed(self, speed):
-        self._speed = min(max(speed, 0.2), 0.6)
+        self._speed = min(max(speed, 0.09), 0.6)
 
     def get_speed(self):
         return self._speed
