@@ -68,14 +68,16 @@ class Ball(Component):
 
     def handle_paddle_collision(self, paddle):
         """
-        Returns False if ball is lost and true otherwise
-        :param paddle:
-        :return:
+        Sets the velocities of the ball after collision
+        :param paddle: the paddle instance
+        :return: False if ball is lost and true otherwise
         """
         if paddle.get_x() <= self._x <= paddle.get_x() + paddle.get_width() and \
                 self._y == paddle.get_y() - 1:
             self.set_yvel(-self._yvel)
             self.set_relative_velocity(x_vel_diff=(self._x - paddle.get_center_x_coordinate()))
+            if paddle.get_grab():
+                paddle.hold_ball(self)
             return True
         elif self._y >= paddle.get_y():
             return False

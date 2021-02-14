@@ -25,5 +25,10 @@ while True:
     for powerup in glob.powerups:
         powerup.render(board.matrix)
     paddle.render(board.matrix)
+
+    board.matrix[0][10] = str(glob.balls[0].get_x())
+    board.matrix[0][15] = str(glob.balls[0].get_y())
+    board.matrix[0][20] = str(glob.balls[0].get_xvel())
+    board.matrix[0][25] = str(glob.balls[0].get_yvel())
     board.render()
 

@@ -7,6 +7,8 @@ import time
 from powerup import PowerUp
 import config
 
+debug_statement = 'NONE'
+
 board = Board()
 paddle = Paddle(8)
 balls = [
@@ -21,7 +23,7 @@ active_powerups = []
 bricks = []
 for y in range(5, 15, 2):
     for j in range(10, 40, 6):
-        bricks.append(Brick(j, y, 3, ['BBBBB']))
+        bricks.append(Brick(j, y, 1, ['BBBBB']))
         # bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
 paddle.hold_ball(balls[0])
 
@@ -65,7 +67,8 @@ def activate_powerups():
                     ball.set_speed(ball.get_speed() - 0.2)
         elif powerup.get_type() == 5:  # thru-ball
             to_append = True
-
+        elif powerup.get_type() == 6:  # Paddle grab
+            paddle.set_grab(True)
         if to_append:
             active_powerups.append(powerup)
 
@@ -139,7 +142,8 @@ def move_balls(pbt):
             if not ret:
                 balls.remove(ball)
         if not len(balls):
-            print('fin')
+            print('fin', debug_statement)
+            print(ball.get_xvel(), ball.get_yvel())
             quit()
     if flag:
         pbt = time.time()

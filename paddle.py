@@ -7,6 +7,13 @@ class Paddle(Component):
         representation = ['X' * width]
         super().__init__(x, config.paddle_row_restriction, representation)
         self._ball = ball
+        self._grab = False
+
+    def set_grab(self, value):
+        self._grab = value
+
+    def get_grab(self):
+        return self._grab
 
     def get_center_x_coordinate(self):
         return self._x + self._width // 2
@@ -34,8 +41,11 @@ class Paddle(Component):
         :return:
         """
         if self._ball:
-            self._ball.set_relative_velocity(x_vel_diff=self.get_ball_rel_distance_from_p_center())
-            self._ball.set_yvel(-1)
+            if self._grab:
+                self._grab = False
+            else:
+                self._ball.set_relative_velocity(x_vel_diff=self.get_ball_rel_distance_from_p_center())
+                self._ball.set_yvel(-1)
             self._ball.set_is_free(True)
             self._ball = None
 
