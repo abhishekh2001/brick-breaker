@@ -1,18 +1,18 @@
 from input import input_to, Get
-from glob import board, paddle, balls
+import glob
 
 
 def make_move():
     c = input_to(Get())
 
     if c == 'a':
-        paddle.move_relative(board.matrix, -1)
+        glob.paddle.move_relative(glob.board.matrix, -1)
 
     if c == 'd':
-        paddle.move_relative(board.matrix, 1)
+        glob.paddle.move_relative(glob.board.matrix, 1)
 
     if c == 'e':
-        paddle.release_ball()
+        glob.paddle.release_ball()
 
     if c == 'q':
         print('fin')

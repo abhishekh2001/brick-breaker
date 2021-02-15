@@ -24,9 +24,9 @@ class PowerUp(Component):
     1: active
     2: disabled
     """
-    def __init__(self, x, y, representation):
-        self._type = random.randint(1, 6)
-        super().__init__(x, y, type_repr_map[self._type])
+    def __init__(self, x, y, representation, p_type):
+        super().__init__(x, y, representation)
+        self._type = p_type
         self._speed = 0.6
         self._status = 0
 
@@ -68,3 +68,42 @@ class PowerUp(Component):
         if self._y >= config.paddle_row_restriction:
             return True
         return False
+
+    def activate(self, obj):
+        pass
+
+    def deactivate(self, obj):
+        pass
+
+
+class ExpandPaddle(PowerUp):
+    def __init__(self, x, y):
+        super().__init__(x, y, ['E'], 1)
+
+    def activate(self, paddle):
+        paddle.set_width(paddle.get_width() + 2)
+
+    def deactivate(self, paddle):
+        paddle.set_width(paddle.get_width() - 2)
+
+
+class ShrinkPaddle(PowerUp):
+    def __init__(self, x, y):
+        super().__init__(x, y, ['S'], 2)
+
+    def activate(self, paddle):
+        paddle.set_width(paddle.get_width() - 2)
+
+    def deactivate(self, paddle):
+        paddle.set_width(paddle.get_width() + 2)
+
+
+class PaddleGrab(PowerUp):
+    def __init__(self, x, y):
+        super().__init__(x, y, ['G'], 6)
+
+    def activate(self, paddle):
+        paddle.set_grab(True)
+
+    def deactivate(self, paddle):
+        paddle.set_grab(False)

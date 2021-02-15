@@ -4,9 +4,10 @@ from paddle import Paddle
 from ball import Ball
 from brick import Brick
 import time
-from powerup import PowerUp
+from powerup import PowerUp, ExpandPaddle, ShrinkPaddle, PaddleGrab, type_repr_map
 import config
 from player import Player
+#TODO: check if thru-ball is retained after losing life
 
 player = Player()
 
@@ -34,7 +35,18 @@ prev_ball_timestamp = time.time()  # Improve
 prev_powerup_timestamp = time.time()
 
 
+def clear_screen():
+    if paddle:
+        paddle.clear(board.matrix)
+    for ball in balls:
+        ball.clear(board.matrix)
+    for powerup in powerups:
+        powerup.clear(board.matrix)
+    for brick in bricks:
+        brick.clear(board.matrix)
+
 def init():
+    global paddle
     global bricks
     global powerups
     global active_powerups
@@ -44,31 +56,40 @@ def init():
     global prev_powerup_timestamp
     global active_powerups
 
+    clear_screen()
+
+    paddle = Paddle(8, width=5)
     balls = [
         Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.3,
              free=True),
     ]
     paddle.hold_ball(balls[0])
+
+    powerups = []
+    to_activate_powerups = []
+    active_powerups = []
+
     bricks = []
     for y in range(5, 15, 4):
         for j in range(10, 100, 15):
             # bricks.append(Brick(j, y, 1, ['BBBBB']))
             bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
+
     prev_ball_timestamp = time.time()  # Improve
     prev_powerup_timestamp = time.time()
-
-    for powerup in powerups:
-        powerup.clear(board.matrix)
-
-    powerups = []
-    active_powerups = []
-    to_activate_powerups = []  # TODO: check if this is necessary
 
 
 def spawn_powerup(x, y):
     if random.random() <= config.prob_powerup:
-        powerup = PowerUp(x, y, ['P'])
-        powerups.append(powerup)
+        p_type = random.choice([1, 2, 3, 4, 5, 6])
+        if p_type == 1:
+            powerups.append(ExpandPaddle(x, y))
+        elif p_type == 2:
+            powerups.append(ShrinkPaddle(x, y))
+        elif p_type == 6:
+            powerups.append(PaddleGrab(x, y))
+        else:
+            powerups.append(PowerUp(x, y, type_repr_map[p_type], p_type))
 
 
 def activate_powerups():
