@@ -1,6 +1,6 @@
-import random
 from component import Component
 import config
+import time
 
 
 type_repr_map = ['-', ['E'], ['S'], ['B'], ['F'], ['T'], ['G']]
@@ -24,11 +24,22 @@ class PowerUp(Component):
     1: active
     2: disabled
     """
-    def __init__(self, x, y, representation, p_type):
+    def __init__(self, x, y, representation, p_type, deactivation_time=10):
         super().__init__(x, y, representation)
         self._type = p_type
         self._speed = 0.6
         self._status = 0
+        self._deactivation_time = deactivation_time
+        self._activation_time = time.time()
+
+    def get_activation_time(self):
+        return self._activation_time
+
+    def set_activation_time(self):
+        self._activation_time = time.time()
+
+    def get_deactivation_time(self):
+        return self._deactivation_time
 
     def get_status(self):
         return self._status

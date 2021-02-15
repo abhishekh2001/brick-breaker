@@ -7,7 +7,8 @@ import time
 from powerup import PowerUp, ExpandPaddle, ShrinkPaddle, PaddleGrab, type_repr_map
 import config
 from player import Player
-#TODO: check if thru-ball is retained after losing life
+# TODO: check if thru-ball is retained after losing life
+# TODO: deactivate while grab powerup
 
 player = Player()
 
@@ -45,6 +46,7 @@ def clear_screen():
     for brick in bricks:
         brick.clear(board.matrix)
 
+
 def init():
     global paddle
     global bricks
@@ -60,7 +62,7 @@ def init():
 
     paddle = Paddle(8, width=5)
     balls = [
-        Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.3,
+        Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2,
              free=True),
     ]
     paddle.hold_ball(balls[0])
@@ -92,6 +94,23 @@ def spawn_powerup(x, y):
             powerups.append(PowerUp(x, y, type_repr_map[p_type], p_type))
 
 
+def deactivate_powerups():
+    for powerup in list(active_powerups):
+        if time.time() - powerup.get_activation_time() >= powerup.get_deactivation_time():
+            if powerup.get_type() == 1:
+                paddle.clear(board.matrix)
+                powerup.deactivate(paddle)
+            elif powerup.get_type() == 2:
+                powerup.deactivate(paddle)
+            elif powerup.get_type() == 3:  # no need to make the balls go poof
+                pass
+            elif powerup.get_type() == 4:  # slow down sped up balls
+                for ball in balls:
+                    ball.set_speed(ball.get_speed() + config.ball_speed_interval)
+            # TODO: 5 & 6
+            active_powerups.remove(powerup)
+
+
 def activate_powerups():
     global to_activate_powerups
     global balls
@@ -100,10 +119,10 @@ def activate_powerups():
     to_append = True
     for powerup in to_activate_powerups:
         if powerup.get_type() == 1:  # expand paddle
-            paddle.set_width(paddle.get_width() + 2)
+            powerup.activate(paddle)
         elif powerup.get_type() == 2:  # shrink paddle
             paddle.clear(board.matrix)
-            paddle.set_width(paddle.get_width() - 2)
+            powerup.activate(paddle)
         elif powerup.get_type() == 3:  # ball multiply
             to_append = False
             if len(balls) < 4:
@@ -119,12 +138,14 @@ def activate_powerups():
             for ball in balls:
                 if 0.1 < ball.get_speed() <= 0.3:
                     to_append = True
-                    ball.set_speed(ball.get_speed() - 0.1)
+                    ball.set_speed(ball.get_speed() - config.ball_speed_interval)
         elif powerup.get_type() == 5:  # thru-ball
             to_append = True
         elif powerup.get_type() == 6:  # Paddle grab
-            paddle.set_grab(True)
+            # paddle.set_grab(True)
+            powerup.activate(paddle)
         if to_append:
+            powerup.set_activation_time()
             active_powerups.append(powerup)
 
     to_activate_powerups = []

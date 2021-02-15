@@ -1,6 +1,7 @@
 from modules import *
 import colorama
-from glob import board, paddle, prev_ball_timestamp, move_balls, prev_powerup_timestamp, move_powerups
+from glob import board, paddle, prev_ball_timestamp, move_balls, prev_powerup_timestamp, move_powerups, \
+    deactivate_powerups
 import glob
 import user_action
 # TODO: limit x_vel to +/- 2
@@ -23,6 +24,7 @@ while True and glob.player.get_lives():
     # Perform motion and functionalities
     prev_ball_timestamp = move_balls(prev_ball_timestamp)
     prev_powerup_timestamp = move_powerups(prev_powerup_timestamp)
+    deactivate_powerups()
 
     # Render screen elements
     for ball in glob.balls:
