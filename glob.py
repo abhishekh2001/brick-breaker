@@ -60,6 +60,7 @@ def init():
     balls = [
         Ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2,
              free=True),
+        # Ball(19, 8, -2, -1, free=True, speed=0.2)
     ]
     paddle.hold_ball(balls[0])
 
@@ -69,7 +70,7 @@ def init():
 
     bricks = []
     for y in range(5, 15, 4):
-        for j in range(10, 100, 15):
+        for j in range(10, 100, 4):
             # bricks.append(Brick(j, y, 1, ['BBBBB']))
             bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
 
@@ -164,24 +165,64 @@ def handle_ball_brick_collision(ball):
     for brick in bricks:
         if brick.get_x() - 1 <= ball.get_x() <= brick.get_x() + brick.get_width() and \
                 brick.get_y() - 1 <= ball.get_y() <= brick.get_y() + brick.get_height():
-            if is_thru_ball():  # if thru-ball is active, destroy brick
-                brick.destroy(board.matrix)
-                spawn_powerup(brick.get_x(), brick.get_y())
-                player.increment_points()  # increase points
-            elif brick.got_hit(board.matrix):  # Brick has zero health -> is destroyed
-                spawn_powerup(brick.get_x(), brick.get_y())
-                player.increment_points()  # increase player points
-
-            if not is_thru_ball():  # handle collisions only if thru-ball is inactive
-                if brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width() - 1:
-                    ball.set_yvel(-ball.get_yvel())
-                elif brick.get_y() <= ball.get_y() <= brick.get_y() + brick.get_height() - 1:
-                    ball.set_xvel(-ball.get_xvel())
-                else:
-                    ball.set_yvel(-ball.get_yvel())
-                    # ball.set_xvel(-ball.get_xvel())
-            break
+            # if is_thru_ball():  # if thru-ball is active, destroy brick
+            #     brick.destroy(board.matrix)
+            #     spawn_powerup(brick.get_x(), brick.get_y())
+            #     player.increment_points()  # increase points
+            # elif brick.got_hit(board.matrix):  # Brick has zero health -> is destroyed
+            #     spawn_powerup(brick.get_x(), brick.get_y())
+            #     player.increment_points()  # increase player points
+            #
+            # if not is_thru_ball():  # handle collisions only if thru-ball is inactive
+            #     bounce_ball(brick, ball)
+            if bounce_ball(brick, ball):
+                break
     bricks = list(filter(lambda b: b.get_health(), bricks))
+
+
+def handle_impact(brick):
+    if is_thru_ball():  # if thru-ball is active, destroy brick
+        brick.destroy(board.matrix)
+        spawn_powerup(brick.get_x(), brick.get_y())
+        player.increment_points()  # increase points
+    elif brick.got_hit(board.matrix):  # Brick has zero health -> is destroyed
+        spawn_powerup(brick.get_x(), brick.get_y())
+        player.increment_points()  # increase player points
+
+
+def bounce_ball(brick, ball):
+
+    if brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width() - 1:
+        if ball.get_y() <= brick.get_y():
+            if not is_thru_ball():
+                ball.set_yvel(-abs(ball.get_yvel()))
+            handle_impact(brick)
+            return True
+        elif ball.get_y() >= brick.get_y() + brick.get_height():
+            if not is_thru_ball():
+                ball.set_yvel(abs(ball.get_yvel()))
+            handle_impact(brick)
+            return True
+    elif brick.get_y() <= ball.get_y() <= brick.get_y() + brick.get_height() - 1:
+        if ball.get_x() <= brick.get_x():
+            if not is_thru_ball():
+                ball.set_xvel(-abs(ball.get_xvel()))
+            handle_impact(brick)
+            return True
+        elif ball.get_x() >= brick.get_x() + brick.get_width():
+            if not is_thru_ball():
+                ball.set_xvel(abs(ball.get_xvel()))
+            handle_impact(brick)
+            return True
+    elif (brick.get_x() <= ball.get_x() + ball.get_xvel() <= brick.get_x() + brick.get_width() - 1 and
+            brick.get_y() <= ball.get_y() + ball.get_yvel() <= brick.get_y() + brick.get_height() - 1) or \
+            (brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width() - 1 and
+             brick.get_y() <= ball.get_y() <= brick.get_y() + brick.get_height() - 1):
+        if not is_thru_ball():
+            ball.set_xvel(-ball.get_xvel())
+            ball.set_yvel(-ball.get_yvel())
+        handle_impact(brick)
+        return True
 
 
 def move_powerups(ppt):
