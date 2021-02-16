@@ -35,6 +35,7 @@ while True and glob.player.get_lives():
         powerup.render(board.matrix)
     glob.paddle.render(board.matrix)
 
+    board.matrix[0][0] = str(glob.balls[0].get_xvel())
     print('Life: ', glob.player.get_lives())
     print('Score: ', glob.player.get_points())
     glob.board.render()

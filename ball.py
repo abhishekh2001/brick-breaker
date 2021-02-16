@@ -32,7 +32,7 @@ class Ball(Component):
         return self._speed
 
     def set_xvel(self, xvel):
-        self._xvel = xvel
+        self._xvel = max(-2, min(xvel, 2))
 
     def get_xvel(self):
         return self._xvel
@@ -90,5 +90,6 @@ class Ball(Component):
         :param x_vel_diff: Difference by which x-velocity is to be changed
         :param y_vel_diff: Difference by which y-velocity is to be changed
         """
-        self._xvel += x_vel_diff
+        # self._xvel += x_vel_diff
+        self.set_xvel(self.get_xvel() + x_vel_diff)
         self._yvel += y_vel_diff
