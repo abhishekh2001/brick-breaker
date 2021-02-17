@@ -1,7 +1,7 @@
 from component import Component
 import config
 import time
-
+import glob
 
 type_repr_map = ['-', ['E'], ['S'], ['B'], ['F'], ['T'], ['G']]
 
@@ -24,6 +24,7 @@ class PowerUp(Component):
     1: active
     2: disabled
     """
+
     def __init__(self, x, y, representation, p_type, deactivation_time=10):
         super().__init__(x, y, representation)
         self._type = p_type
@@ -80,41 +81,85 @@ class PowerUp(Component):
             return True
         return False
 
-    def activate(self, obj):
+    def activate(self):
         pass
 
-    def deactivate(self, obj):
+    def deactivate(self):
         pass
 
 
-class ExpandPaddle(PowerUp):
+class ExpandPaddle(PowerUp):  # 1
     def __init__(self, x, y):
         super().__init__(x, y, ['E'], 1)
 
-    def activate(self, paddle):
-        paddle.set_width(paddle.get_width() + 2)
+    def activate(self):
+        glob.paddle.set_width(glob.paddle.get_width() + 2)
+        return True
 
-    def deactivate(self, paddle):
-        paddle.set_width(paddle.get_width() - 2)
+    def deactivate(self):
+        glob.paddle.clear(glob.board.matrix)
+        glob.paddle.set_width(glob.paddle.get_width() - 2)
 
 
-class ShrinkPaddle(PowerUp):
+class ShrinkPaddle(PowerUp):  # 2
     def __init__(self, x, y):
         super().__init__(x, y, ['S'], 2)
 
-    def activate(self, paddle):
-        paddle.set_width(paddle.get_width() - 2)
+    def activate(self):
+        glob.paddle.set_width(glob.paddle.get_width() - 2)
+        return True
 
-    def deactivate(self, paddle):
-        paddle.set_width(paddle.get_width() + 2)
+    def deactivate(self):
+        glob.paddle.set_width(glob.paddle.get_width() + 2)
 
 
-class PaddleGrab(PowerUp):
+class BallMultiplier(PowerUp):  # 3
+    def __init__(self, x, y):
+        super().__init__(x, y, ['B'], 3)
+
+    def activate(self):
+        to_append = False
+        if glob.balls.get_number_balls() < 4:
+            to_append = True
+            for ball in list(glob.balls.get_balls()):
+                glob.balls.add_ball(ball.get_x(), ball.get_y(),
+                                    -ball.get_xvel(), -ball.get_yvel(),
+                                    free=True, speed=ball.get_speed())
+        return to_append
+
+
+class FastBall(PowerUp):  # 4
+    def __init__(self, x, y):
+        super().__init__(x, y, ['F'], 4)
+
+    def activate(self):
+        to_append = False
+        for ball in glob.balls.get_balls():
+            if 0.1 < ball.get_speed() <= 0.3:
+                to_append = True
+                ball.set_speed(ball.get_speed() - config.ball_speed_interval)
+        return to_append
+
+    def deactivate(self):
+        for ball in glob.balls.get_balls():
+            ball.set_speed(ball.get_speed() + config.ball_speed_interval)
+
+
+class ThruBall(PowerUp):  # 5
+    def __init__(self, x, y):
+        super().__init__(x, y, ['T'], 5)
+
+    def activate(self):
+        return True
+
+
+class PaddleGrab(PowerUp):  # 6
     def __init__(self, x, y):
         super().__init__(x, y, ['G'], 6)
 
-    def activate(self, paddle):
-        paddle.set_grab(True)
+    def activate(self):
+        glob.paddle.set_grab(True)
+        return True
 
-    def deactivate(self, paddle):
-        paddle.set_grab(False)
+    def deactivate(self):
+        glob.paddle.set_grab(False)
