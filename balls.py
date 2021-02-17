@@ -10,18 +10,25 @@ def bounce_ball(brick, ball):
     :param ball: ball instance
     :return: True on impact and False otherwise
     """
-    if brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width() - 1:
+    if brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width() - 1 and ball.get_y() != brick.get_y():
         if ball.get_y() <= brick.get_y():
             if not glob.is_thru_ball():
-                ball.set_yvel(-abs(ball.get_yvel()))
-            glob.handle_impact(brick)
+                if ball.get_yvel() > 0:
+                    ball.set_yvel(-abs(ball.get_yvel()))
+                    glob.handle_impact(brick)
+            else:
+                glob.handle_impact(brick)
             return True
         elif ball.get_y() >= brick.get_y() + brick.get_height():
             if not glob.is_thru_ball():
-                ball.set_yvel(abs(ball.get_yvel()))
-            glob.handle_impact(brick)
+                if ball.get_yvel() <= 0:
+                    ball.set_yvel(abs(ball.get_yvel()))
+                    glob.handle_impact(brick)
+            else:
+                glob.handle_impact(brick)
             return True
-    elif brick.get_y() <= ball.get_y() <= brick.get_y() + brick.get_height() - 1:
+    elif brick.get_y() <= ball.get_y() <= brick.get_y() + brick.get_height() - 1 and \
+            (not brick.get_x() <= ball.get_x() <= brick.get_x() + brick.get_width()):
         if ball.get_x() <= brick.get_x():
             if not glob.is_thru_ball():
                 ball.set_xvel(-abs(ball.get_xvel()))

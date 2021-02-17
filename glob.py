@@ -56,6 +56,7 @@ def init():
     paddle = Paddle(8, width=5)
     balls.add_ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2,
                    free=True)
+    # balls.add_ball(0, 1, 2, 1, free=True, speed=0.2)  # This is an issue
     paddle.hold_ball(balls.get_balls()[0])
 
     powerups = []
@@ -63,17 +64,16 @@ def init():
     active_powerups = []
 
     bricks = []
-    for y in range(2, 7, 4):
-        for j in range(10, 100, 4):
+    for y in range(4, 9, 4):
+        for j in range(10, 100, 10):
             # bricks.append(Brick(j, y, 1, ['BBBBB']))
-            bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB', 'BBBB']))
+            bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
 
     for x in range(40, 55, 4):
         bricks.append(ExplodingBrick(x, 14))
     bricks.append(ExplodingBrick(36, 13))
     bricks.append(ExplodingBrick(56, 13))
-    bricks.append(Brick(45, 12, 2, ['BBBB', 'BBBB']))
-    bricks.append(Brick(45, 10, 2, ['BBBB', 'BBBB']))
+    bricks.append(Brick(45, 13, 2, ['BBBB']))
 
     prev_ball_timestamp = time.time()  # Improve
     prev_powerup_timestamp = time.time()

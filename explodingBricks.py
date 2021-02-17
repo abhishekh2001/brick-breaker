@@ -4,7 +4,7 @@ import glob
 
 class ExplodingBrick(Brick):
     def __init__(self, x, y):
-        super(ExplodingBrick, self).__init__(x, y, 4, ['BBBB', 'BBBB'])
+        super(ExplodingBrick, self).__init__(x, y, 4, ['BBBB'])
 
     def get_nearby_bricks(self):
         """
