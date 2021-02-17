@@ -8,14 +8,14 @@ class Brick(Component):
         Implements a single Brick component
         :param x: x position
         :param y: y position
-        :param brick_type: type of brick, -1, 1, 2, 3
+        :param brick_type: type of brick, -1, 1, 2, 3, 4
         :param representation: representation in matrix/board
         """
         super().__init__(x, y, representation)
         self._brick_type = brick_type
         self._health = brick_type
-        if brick_type == -1:
-            self._health = 9999
+        if brick_type == 4:
+            self._health = 1
 
     def set_brick_type(self, brick_type):
         self._brick_type = brick_type
@@ -37,7 +37,7 @@ class Brick(Component):
         if self._brick_type == 1:
             self.destroy(board)
             return True
-        elif self._brick_type != -1 and self._brick_type != 0:
+        elif self._brick_type not in [-1, 0, 4]:
             self._health -= 1
             self._brick_type -= 1
         return False
@@ -57,10 +57,26 @@ class Brick(Component):
         elif self._brick_type == 3:
             return Back.MAGENTA
         else:
-            return Back.LIGHTCYAN_EX
+            return Back.YELLOW
 
     def render(self, board):
         for row in range(self._height):
             for col in range(self._width):
                 board[self._y + row][self._x + col] = self._get_color() + self._representation[row][col] \
                                                       + Style.RESET_ALL
+
+    def overlap(self, brick):
+        """
+        Check if current brick and another are in contact
+        :param brick: brick instance
+        :return: True if in contact and false otherwise
+        """
+        if self.get_x() > brick.get_x() + brick.get_width() or \
+                brick.get_x() > self.get_x() + self.get_width():
+            return False
+
+        if self.get_y() > brick.get_y() + brick.get_height() or  \
+                brick.get_y() > self.get_y() + self.get_height():
+            return False
+
+        return True

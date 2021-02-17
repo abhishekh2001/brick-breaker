@@ -106,6 +106,7 @@ class ShrinkPaddle(PowerUp):  # 2
         super().__init__(x, y, ['S'], 2)
 
     def activate(self):
+        glob.paddle.clear(glob.board.matrix)
         glob.paddle.set_width(glob.paddle.get_width() - 2)
         return True
 

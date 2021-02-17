@@ -9,6 +9,7 @@ from powerup import PowerUp, ExpandPaddle, ShrinkPaddle, PaddleGrab, type_repr_m
 import config
 from player import Player
 from balls import Balls
+from explodingBricks import ExplodingBrick
 
 
 player = Player()
@@ -62,10 +63,17 @@ def init():
     active_powerups = []
 
     bricks = []
-    for y in range(5, 15, 4):
+    for y in range(2, 7, 4):
         for j in range(10, 100, 4):
             # bricks.append(Brick(j, y, 1, ['BBBBB']))
-            bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
+            bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB', 'BBBB']))
+
+    for x in range(40, 55, 4):
+        bricks.append(ExplodingBrick(x, 14))
+    bricks.append(ExplodingBrick(36, 13))
+    bricks.append(ExplodingBrick(56, 13))
+    bricks.append(Brick(45, 12, 2, ['BBBB', 'BBBB']))
+    bricks.append(Brick(45, 10, 2, ['BBBB', 'BBBB']))
 
     prev_ball_timestamp = time.time()  # Improve
     prev_powerup_timestamp = time.time()
@@ -117,7 +125,9 @@ def handle_impact(brick):
     Behavior of brick on successful impact with ball
     :param brick: brick instance
     """
-    if is_thru_ball():  # if thru-ball is active, destroy brick
+    if brick.get_brick_type() == 4:
+        brick.chain_explosions()
+    elif is_thru_ball():  # if thru-ball is active, destroy brick
         brick.destroy(board.matrix)
         spawn_powerup(brick.get_x(), brick.get_y())
         player.increment_points()  # increase points
