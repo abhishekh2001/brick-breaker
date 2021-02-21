@@ -16,11 +16,17 @@ class Brick(Component):
         self._health = brick_type
         if brick_type == 4:
             self._health = 1
+        self._score = self._health
+        if brick_type == -1:
+            self._score = 10
 
     def set_brick_type(self, brick_type):
         self._brick_type = brick_type
         if brick_type == -1:
             self._health = brick_type
+
+    def get_score(self):
+        return self._score
 
     def get_brick_type(self):
         return self._brick_type

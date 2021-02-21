@@ -18,5 +18,8 @@ class Player:
     def set_points(self, value):
         self._points = value
 
+    def increment_points_by(self, value):
+        self._points += value
+
     def increment_points(self):
         self._points += 1

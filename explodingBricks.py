@@ -18,7 +18,9 @@ class ExplodingBrick(Brick):
         neighbors = self.get_nearby_bricks()
         for brick in neighbors:
             if brick.get_brick_type() == 4 and brick.get_health():
+                glob.player.increment_points_by(brick.get_score())
                 brick.chain_explosions()
             if brick.get_brick_type() != 4 and brick.get_health():
                 glob.spawn_powerup(brick.get_x(), brick.get_y())
+                glob.player.increment_points_by(brick.get_score())
             brick.destroy(glob.board.matrix)

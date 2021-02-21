@@ -81,6 +81,9 @@ class Balls:
     def get_balls(self):
         return self._balls
 
+    def remove_half(self):
+        self._balls = self._balls[:max(1, len(self._balls)//2)]
+
     def move_all(self):
         pbt = glob.prev_ball_timestamp
         flag = False
@@ -94,6 +97,7 @@ class Balls:
                     self._balls.remove(ball)
             if not len(self._balls):
                 glob.player.lose_life()
+                glob.player.set_points(0)
                 glob.init()
         if flag:
             pbt = time.time()
@@ -103,3 +107,7 @@ class Balls:
     def render_all(self, board):
         for ball in self._balls:
             ball.render(board)
+
+    def clear_all(self, board):
+        for ball in self._balls:
+            ball.clear(board)

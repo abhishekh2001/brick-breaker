@@ -25,6 +25,9 @@ class Paddle(Component):
         ball.set_is_free(False)
         self._ball = ball
 
+    def get_ball(self):
+        return self._ball
+
     def get_ball_rel_distance_from_p_center(self):
         """
         Returns the relative distance of the ball from the center

@@ -15,5 +15,5 @@ def make_move():
         glob.paddle.release_ball()
 
     if c == 'q':
-        print('fin')
+        print('game aborted')
         quit()

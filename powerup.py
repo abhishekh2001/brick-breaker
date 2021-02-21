@@ -123,10 +123,19 @@ class BallMultiplier(PowerUp):  # 3
         if glob.balls.get_number_balls() < 4:
             to_append = True
             for ball in list(glob.balls.get_balls()):
-                glob.balls.add_ball(ball.get_x(), ball.get_y(),
-                                    -ball.get_xvel(), -ball.get_yvel(),
-                                    free=True, speed=ball.get_speed())
+                if ball == glob.paddle.get_ball():
+                    glob.balls.add_ball(ball.get_x(), ball.get_y(),
+                                        -ball.get_xvel(), -1,
+                                        free=True, speed=ball.get_speed())
+                else:
+                    glob.balls.add_ball(ball.get_x(), ball.get_y(),
+                                        -ball.get_xvel(), -ball.get_yvel(),
+                                        free=True, speed=ball.get_speed())
         return to_append
+
+    def deactivate(self):
+        glob.balls.clear_all(glob.board.matrix)
+        glob.balls.remove_half()
 
 
 class FastBall(PowerUp):  # 4

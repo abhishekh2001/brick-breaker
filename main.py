@@ -4,7 +4,6 @@ from glob import board, paddle, prev_ball_timestamp, prev_powerup_timestamp, mov
     deactivate_powerups
 import glob
 import user_action
-# TODO: limit x_vel to +/- 2
 # TODO: how to handle lost life
 # TODO: handle when player has killed all the bricks
 # TODO: different bricks, different scores
@@ -14,6 +13,8 @@ import user_action
 
 colorama.init()
 glob.init()
+start_time = time.time()
+max_points = 0
 
 while True and glob.player.get_lives():
     # Move paddle
@@ -34,7 +35,14 @@ while True and glob.player.get_lives():
         powerup.render(board.matrix)
     glob.paddle.render(board.matrix)
 
+    glob.max_points = max(glob.player.get_points(), glob.max_points)
+
     print('Life: ', glob.player.get_lives())
     print('Score: ', glob.player.get_points())
+    print('Time: ', str(int(time.time() - start_time)), 's')
     glob.board.render()
 
+    if not len(list(filter(lambda b: b.get_brick_type() != -1, glob.bricks))):
+        break
+
+print('Max score is ', glob.max_points)

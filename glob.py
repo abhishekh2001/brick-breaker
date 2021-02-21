@@ -1,7 +1,6 @@
 import random
 from board import Board
 from paddle import Paddle
-from ball import Ball
 from brick import Brick
 import time
 from powerup import PowerUp, ExpandPaddle, ShrinkPaddle, PaddleGrab, type_repr_map, \
@@ -13,6 +12,7 @@ from explodingBricks import ExplodingBrick
 
 
 player = Player()
+max_points = 0
 
 board = Board()
 paddle = Paddle(8)
@@ -20,10 +20,9 @@ balls = Balls()
 powerups = []
 to_activate_powerups = []
 active_powerups = []
-
 bricks = []
 
-prev_ball_timestamp = time.time()  # Improve
+prev_ball_timestamp = time.time()
 prev_powerup_timestamp = time.time()
 
 
@@ -56,7 +55,6 @@ def init():
     paddle = Paddle(8, width=5)
     balls.add_ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2,
                    free=True)
-    # balls.add_ball(0, 1, 2, 1, free=True, speed=0.2)  # This is an issue
     paddle.hold_ball(balls.get_balls()[0])
 
     powerups = []
@@ -66,7 +64,7 @@ def init():
     bricks = []
     for y in range(4, 9, 4):
         for j in range(10, 100, 10):
-            # bricks.append(Brick(j, y, 1, ['BBBBB']))
+            # bricks.append(Brick(j, y, -1, ['BBBBB']))
             bricks.append(Brick(j, y, random.choice([-1, 1, 2, 3]), ['BBBB']))
 
     for x in range(40, 55, 4):
@@ -77,6 +75,26 @@ def init():
 
     prev_ball_timestamp = time.time()  # Improve
     prev_powerup_timestamp = time.time()
+
+
+def start_new_life():
+    global balls
+    global powerups
+    global to_activate_powerups
+    global active_powerups
+    global paddle
+    clear_screen()
+
+    balls.remove_all()
+
+    paddle = Paddle(8, width=5)
+    balls.add_ball(paddle.get_x() + random.randint(0, paddle.get_width() - 1), paddle.get_y() - 1, 0, 0, speed=0.2,
+                   free=True)
+    paddle.hold_ball(balls.get_balls()[0])
+
+    powerups = []
+    to_activate_powerups = []
+    active_powerups = []
 
 
 def spawn_powerup(x, y):
@@ -130,10 +148,10 @@ def handle_impact(brick):
     elif is_thru_ball():  # if thru-ball is active, destroy brick
         brick.destroy(board.matrix)
         spawn_powerup(brick.get_x(), brick.get_y())
-        player.increment_points()  # increase points
+        player.increment_points_by(brick.get_score())  # increase points
     elif brick.got_hit(board.matrix):  # Brick has zero health -> is destroyed
         spawn_powerup(brick.get_x(), brick.get_y())
-        player.increment_points()  # increase player points
+        player.increment_points_by(brick.get_score())  # increase player points
 
 
 def move_powerups(ppt):
