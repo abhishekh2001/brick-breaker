@@ -6,7 +6,7 @@ or you have lost all five of your lives.
 
 The game includes a paddle and a ball initially and the objective
 is to break the bricks using the ball by bouncing the ball
-off of the paddle. There are four kinds of bricks -
+off of the paddle. There are five kinds of bricks -
 * Three breakable bricks with health 3, 2, 1 that contribute
 3, 2, 1 points of scores respectively.
 * Unbreakable brick that contributes 10 points to the score.
@@ -16,7 +16,7 @@ one points each.
 Use `a` and `d` on your keyboard to move the paddle, `e` to 
 shoot the ball if a ball is held by the paddle, and `q` to abort the game.
 
-There is a 20% chance to spawn one of six **exciting** powerups
+There is a 75% chance to spawn one of six **exciting** powerups
 on breaking a brick.
 
 ---
@@ -29,7 +29,7 @@ or has lost all five of his lives.
 5. On a game end, the highest score achieved in the run is displayed.
 6. Bricks are destroyed by forcing a ball to collide with it.
 7. Direction of ball is controlled using intelligent positioning of the paddle.
-8. 
+
 ---
 ## Classes involved
 * `Component` The most basic class from which all other elements of the game inherits from.
